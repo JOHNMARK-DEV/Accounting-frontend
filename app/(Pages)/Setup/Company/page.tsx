@@ -3,21 +3,40 @@ import CustomButtons from "@/components/CustomButtons";
 import { Box, Checkbox, Divider, FormControlLabel, FormGroup, Grid, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
-export default function Company() {  
+import Swal from 'sweetalert2';
+export default function Company() {
     const buttonNames = ['Edit'];
-    const [editable,setEditable] = useState(false)
+    const [editable, setEditable] = useState(false)
 
-    const handleEditButton = () =>{
+    const handleEditButton = () => {
         setEditable(!editable)
+    }
+
+    const handleSaveButton = () => {
+        Swal.fire({
+            title: "Do you want to save the changes?",
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Save",
+            denyButtonText: `Don't save`
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                Swal.fire("Saved!", "", "success");
+            } else if (result.isDenied) {
+                Swal.fire("Changes are not saved", "", "info");
+            }
+        });
     }
 
     return (
         <>
-            <CustomButtons 
-                ButtonNames={buttonNames} 
-                onClickEdit={() => handleEditButton()}  
+            <CustomButtons
+                ButtonNames={buttonNames}
+                onClickEdit={() => handleEditButton()}
+                onClickSave={() => handleSaveButton()}
             />
-            
+
             <Divider sx={{ marginTop: "10px" }} />
             <Box>
                 <Grid container spacing={2} >
