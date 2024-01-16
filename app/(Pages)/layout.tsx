@@ -11,13 +11,13 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
+import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import PaymentsIcon from '@mui/icons-material/Payments';
@@ -32,13 +32,16 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ExpandLess, ExpandMore, Height, StarBorder } from '@mui/icons-material';
-import { Breadcrumbs, Card, Collapse, Link } from '@mui/material';
+import { Avatar, Badge, Breadcrumbs, Card, Collapse, Link, Menu, MenuItem, Stack, Tooltip } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import { getRoutePath } from './routes'
-const inter = Inter({ subsets: ['latin'] })
+import { LocalizationProvider } from "@mui/x-date-pickers";
+const inter = Inter({ subsets: ['latin'] })  
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
-import { useRouter } from 'next/navigation'; 
-const drawerWidth = 240;
+import { useRouter } from 'next/navigation';
+import { UseSetupList, UseTransactionNav } from '@/components/Static/Navitems';
+const drawerWidth = 280;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
     open?: boolean;
@@ -85,18 +88,6 @@ const breadcrumbs = [
     <Link underline="hover" key="1" color="white" href="/"  >
         Company
     </Link>,
-    // <Link
-    //     underline="hover"
-    //     key="2"
-    //     color="white"
-    //     href="/material-ui/getting-started/installation/"
-
-    // >
-    //     Core
-    // </Link>,
-    // <Typography key="3" color="white">
-    //     Breadcrumb
-    // </Typography>,
 ];
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -114,12 +105,35 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     const theme = useTheme();
-    const [open, setOpen] = React.useState(false);
-    const [openSetupList, setSetupList] = React.useState(false);
+    const [open, setOpen] = React.useState(true);
+    const [module, setModule] = React.useState("Dashboard");
+    const [ToggleCollapse, setToggleCollapse] = React.useState(0);
+    const [ChildToggleCollapse, setChildToggleCollapse] = React.useState(0);
 
-    const handleClickSetupList = () => {
-        setSetupList(!openSetupList);
+
+    const [CollapseIndexState, setCollapseIndexState] = React.useState(0);
+    const [CollapseChildIndexState, setCollapseChildIndexState] = React.useState(0);
+    const handleClickToggle = (index: number = 0) => {
+
+        if (CollapseIndexState != index) {
+            setCollapseIndexState(() => index)
+            setToggleCollapse(() => index)
+        } else {
+            setCollapseIndexState(() => 0)
+            setToggleCollapse(0);
+        }
     };
+    const handleClickChildToggle = (index: number = 0) => {
+
+        if (CollapseChildIndexState != index) {
+            setCollapseChildIndexState(() => index)
+            setChildToggleCollapse(() => index)
+        } else {
+            setCollapseChildIndexState(() => 0)
+            setChildToggleCollapse(0);
+        }
+    };
+
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -129,14 +143,20 @@ export default function RootLayout({
         setOpen(false);
     };
     const router = useRouter()
-    const handleRoutes = (target: string) => {
-        router.push(getRoutePath(target));
-    }
 
+    const handleRoutes = (target: string) => {
+        router.push(target);
+        setModule(() => target);
+    }
+    const transactionList = UseTransactionNav;
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex',zoom:'80%' }}>
             <CssBaseline />
-            <AppBar position="fixed" open={open}>
+            <AppBar
+                position="fixed"
+                open={open}
+                sx={{ backgroundColor: 'grey' }}
+            >
                 <Toolbar>
                     <IconButton
                         color="inherit"
@@ -147,17 +167,63 @@ export default function RootLayout({
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Box>
-                        <Typography variant="h6" noWrap component="div">
-                            Company
-                        </Typography>
-                        <Breadcrumbs
-                            separator={<NavigateNextIcon fontSize="small" sx={{ color: 'white' }} />}
-                            aria-label="breadcrumb"
-                        >
-                            {breadcrumbs}
-                        </Breadcrumbs>
-                    </Box>
+                    <Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={4}
+                        sx={{ width: '100vw' }}
+                    >
+                        <Box sx={{ display: 'flex' }}>
+                            <img src="/images/Fudz_logo.ico" alt="" width={40} height={40} />
+                            <Box sx={{ paddingLeft: '10px' }}>
+                                <Typography variant="h6" noWrap component="div">
+                                    Company
+                                </Typography>
+                                <Breadcrumbs
+                                    separator={<NavigateNextIcon fontSize="small" sx={{ color: 'white' }} />}
+                                    aria-label="breadcrumb"
+                                >
+                                    {breadcrumbs}
+                                </Breadcrumbs>
+                            </Box>
+                        </Box>
+                        <Box sx={{ flexGrow: 0 }}>
+                            <IconButton className='mx-10'>
+                                <Badge badgeContent={1} color="secondary">
+                                    <NotificationsNoneOutlinedIcon sx={{ color: 'white' }} />
+                                </Badge>
+                            </IconButton>
+
+                            <Tooltip title="Open settings">
+                                <IconButton sx={{ p: 0 }}>
+                                    <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                </IconButton>
+                            </Tooltip>
+
+                            <Menu
+                                sx={{ mt: '45px' }}
+                                id="menu-appbar"
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                open={false}
+                            // onClose={handleCloseUserMenu}
+                            >
+                                {/* {settings.map((setting) => (
+                                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                                        <Typography textAlign="center">{setting}</Typography>
+                                    </MenuItem>
+                                ))} */}
+                            </Menu>
+                        </Box>
+                    </Stack>
                 </Toolbar>
             </AppBar>
             <Drawer
@@ -179,191 +245,208 @@ export default function RootLayout({
                     </IconButton>
                 </DrawerHeader>
                 <Divider />
-                <List component="div" disablePadding>
-                    <ListItemButton sx={{ pl: 1 }} onClick={() => handleRoutes("Dashboard")}> s
+                <Box>
+                    <ListItemButton sx={{ pl: 1 }} onClick={() => handleRoutes('/Dashboard')} selected={module == 'Dashboard'}>
                         <ListItemIcon>
                             <DashboardIcon />
                         </ListItemIcon>
-                        <ListItemText primary="Dashboard" />
+                        <ListItemText primary={'Dashboard'} />
                     </ListItemButton>
-                    <ListItemButton sx={{ pl: 1 }}>
-                        <ListItemIcon>
-                            <ReceiptIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Invoicing" />
-                    </ListItemButton>
-                    <ListItemButton sx={{ pl: 1 }}>
-                        <ListItemIcon>
-                            <PointOfSaleIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Official Receipt" />
-                    </ListItemButton>
-                    <ListItemButton sx={{ pl: 1 }}>
-                        <ListItemIcon>
-                            <ShoppingBagIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Accounts Payable Voucher" />
-                    </ListItemButton>
-                    <ListItemButton sx={{ pl: 1 }}>
-                        <ListItemIcon>
-                            <PaymentsIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Check Voucher" />
-                    </ListItemButton>
-                    <ListItemButton sx={{ pl: 1 }}>
-                        <ListItemIcon>
-                            <LibraryBooksIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Journal Voucher" />
-                    </ListItemButton>
-                    <ListItemButton sx={{ pl: 1 }}>
-                        <ListItemIcon>
-                            <BrokenImageIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Debit / Credit memo" className='text-9xl' />
-                    </ListItemButton>
-                    <ListItemButton sx={{ pl: 1 }}>
-                        <ListItemIcon>
-                            <SearchIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Transaction Viewer" />
-                    </ListItemButton>
-                </List>
-                <Divider />
-                <Box>
-                    <ListItemButton sx={{ pl: 1 }}
-                        onClick={handleClickSetupList}>
+                    <ListItemButton sx={{ pl: 1 }} onClick={() => handleClickToggle(1)} selected={ToggleCollapse == 1}>
                         <ListItemIcon>
                             <SettingsIcon />
                         </ListItemIcon>
-                        <ListItemText primary="System Configuration" />
-                        {openSetupList ? <ExpandLess /> : <ExpandMore />}
+                        <ListItemText primary="Sales Management"
+                            sx={{
+                                fontWeight: ToggleCollapse === 2 ? 'bold' : 'normal', // Use 'bold' if ToggleCollapse is 2, otherwise 'normal' 
+                                // Add other styles as needed
+                            }} />
+                        {ToggleCollapse == 1 ? <ExpandLess /> : <ExpandMore />}
                     </ListItemButton>
-                    <Collapse in={openSetupList} timeout="auto" unmountOnExit>
-
-                        {/* COMPANY */}
-                        <List>
-
-                            <ListItemButton sx={{ pl: 2, py: 0 }} onClick={() => handleRoutes("CompanySetup")}>
-                                <ListItemIcon>
-                                    <SettingsIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Company Setup" />
-                            </ListItemButton>
+                    <ListItemButton sx={{ pl: 1 }} onClick={() => handleClickToggle(1)} selected={ToggleCollapse == 1}>
+                        <ListItemIcon>
+                            <SettingsIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Purchasing Management"
+                            sx={{
+                                fontWeight: ToggleCollapse === 2 ? 'bold' : 'normal', // Use 'bold' if ToggleCollapse is 2, otherwise 'normal' 
+                                // Add other styles as needed
+                            }} />
+                        {ToggleCollapse == 1 ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton>
+                    <ListItemButton sx={{ pl: 1 }} onClick={() => handleClickToggle(1)} selected={ToggleCollapse == 1}>
+                        <ListItemIcon>
+                            <SettingsIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Accounting Management"
+                            sx={{
+                                fontWeight: ToggleCollapse === 2 ? 'bold' : 'normal', // Use 'bold' if ToggleCollapse is 2, otherwise 'normal' 
+                                // Add other styles as needed
+                            }} />
+                        {ToggleCollapse == 1 ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton>
+                    <Collapse in={ToggleCollapse == 1} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                            {transactionList.map(page => (
+                                <ListItemButton sx={{ pl: 2 }} key={page.name} onClick={() => handleRoutes(page.name)} selected={module == "/Transaction/" + page.name}>
+                                    <ListItemIcon>
+                                        <page.icon />
+                                    </ListItemIcon>
+                                    <ListItemText primary={page.name} />
+                                </ListItemButton>
+                            ))}
                         </List>
+                    </Collapse>
+                </Box>
 
-                        {/* CURRENCY */}
+                <Divider />
+                <Box>
+                    <ListItemButton sx={{ pl: 1 }}
+                        onClick={() => handleClickToggle(2)} selected={ToggleCollapse == 2}>
+                        <ListItemIcon>
+                            <SettingsIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="System Configuration"
+                            sx={{
+                                fontWeight: ToggleCollapse === 2 ? 'bold' : 'normal', // Use 'bold' if ToggleCollapse is 2, otherwise 'normal' 
+                                // Add other styles as needed
+                            }} />
+                        {ToggleCollapse == 2 ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton>
+                    <Collapse in={ToggleCollapse == 2} timeout="auto" unmountOnExit>
                         <List>
-
-                            <ListItemButton sx={{ pl: 2, py: 0 }} onClick={() => handleRoutes("CurrencySetup")}>
-                                <ListItemIcon>
-                                    <SettingsIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Currency Setup" />
-                            </ListItemButton>
+                            {
+                                UseSetupList.SystemConfig.map(page => (
+                                    <ListItemButton sx={{ pl: 2 }} key={page.name} onClick={() => handleRoutes("/Setup/" + page.name.replaceAll(" ", ""))} selected={module == "/Setup/" + page.name.replaceAll(" ", "")}>
+                                        <ListItemIcon>
+                                            <page.icon />
+                                        </ListItemIcon>
+                                        <ListItemText primary={page.name} />
+                                    </ListItemButton>
+                                ))
+                            }
                         </List>
-
                         <Box>
                             <ListItemButton
-                                onClick={handleClickSetupList}>
+                                onClick={() => handleClickChildToggle(1)}>
                                 <ListItemIcon>
                                     <SettingsIcon />
                                 </ListItemIcon>
                                 <ListItemText primary="Account Management" />
-                                {openSetupList ? <ExpandLess /> : <ExpandMore />}
+                                {CollapseChildIndexState == 1 ? <ExpandLess /> : <ExpandMore />}
                             </ListItemButton>
-                            <Collapse in={!openSetupList} timeout="auto" unmountOnExit>
+                            <Collapse in={CollapseChildIndexState == 1} timeout="auto" unmountOnExit>
                                 <List component="div" disablePadding>
-                                    <ListItemButton sx={{ pl: 3 }}>
-                                        <ListItemIcon>
-                                            <StarBorder />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Starred" />
-                                    </ListItemButton>
+                                    {
+                                        UseSetupList.Accounts.map(page => (
+                                            <ListItemButton sx={{ pl: 4 }} key={page.name}>
+                                                <ListItemIcon>
+                                                    <page.icon />
+                                                </ListItemIcon>
+                                                <ListItemText primary={page.name} />
+                                            </ListItemButton>
+                                        ))
+                                    }
                                 </List>
                             </Collapse>
                         </Box>
 
                         <Box>
                             <ListItemButton
-                                onClick={handleClickSetupList}>
+                                onClick={() => handleClickChildToggle(2)}>
                                 <ListItemIcon>
                                     <SettingsIcon />
                                 </ListItemIcon>
                                 <ListItemText primary="Book" />
-                                {openSetupList ? <ExpandLess /> : <ExpandMore />}
+                                {CollapseChildIndexState == 2 ? <ExpandLess /> : <ExpandMore />}
                             </ListItemButton>
-                            <Collapse in={!openSetupList} timeout="auto" unmountOnExit>
+                            <Collapse in={CollapseChildIndexState == 2} timeout="auto" unmountOnExit>
                                 <List component="div" disablePadding>
-                                    <ListItemButton sx={{ pl: 3 }}>
-                                        <ListItemIcon>
-                                            <SettingsIcon />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Starred" />
-                                    </ListItemButton>
+                                    {
+                                        UseSetupList.Book.map(page => (
+                                            <ListItemButton sx={{ pl: 4 }} key={page.name} onClick={() => handleRoutes("/Setup/Book/" + page.name.replaceAll(" ", ""))} selected={module == "/Setup/Tax/" + page.name}>
+                                                <ListItemIcon>
+                                                    <page.icon />
+                                                </ListItemIcon>
+                                                <ListItemText primary={page.name} />
+                                            </ListItemButton>
+                                        ))
+                                    }
                                 </List>
                             </Collapse>
                         </Box>
 
                         <Box>
                             <ListItemButton
-                                onClick={handleClickSetupList}>
+                                onClick={() => handleClickChildToggle(3)}>
                                 <ListItemIcon>
                                     <SettingsIcon />
                                 </ListItemIcon>
                                 <ListItemText primary="Chart" />
-                                {openSetupList ? <ExpandLess /> : <ExpandMore />}
+                                {CollapseChildIndexState == 3 ? <ExpandLess /> : <ExpandMore />}
                             </ListItemButton>
-                            <Collapse in={!openSetupList} timeout="auto" unmountOnExit>
+                            <Collapse in={CollapseChildIndexState == 3} timeout="auto" unmountOnExit>
                                 <List component="div" disablePadding>
-                                    <ListItemButton sx={{ pl: 3 }}>
-                                        <ListItemIcon>
-                                            <SettingsIcon />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Starred" />
-                                    </ListItemButton>
+                                    {
+                                        UseSetupList.Charts.map(page => (
+                                            <ListItemButton key={page.name} sx={{ pl: 4 }} onClick={() => handleRoutes("/Setup/Chart/" + page.name.replaceAll(" ", ""))} selected={module == "/Setup/Chart/" + page.name}>
+                                                <ListItemIcon>
+                                                    <page.icon />
+                                                </ListItemIcon>
+                                                <ListItemText primary={page.name} />
+                                            </ListItemButton>
+                                        ))
+                                    }
                                 </List>
                             </Collapse>
                         </Box>
 
                         <Box>
                             <ListItemButton
-                                onClick={handleClickSetupList}>
+                                onClick={() => handleClickChildToggle(4)}>
                                 <ListItemIcon>
                                     <SettingsIcon />
                                 </ListItemIcon>
                                 <ListItemText primary="Tax" />
-                                {openSetupList ? <ExpandLess /> : <ExpandMore />}
+                                {CollapseChildIndexState == 4 ? <ExpandLess /> : <ExpandMore />}
                             </ListItemButton>
-                            <Collapse in={!openSetupList} timeout="auto" unmountOnExit>
+                            <Collapse in={CollapseChildIndexState == 4} timeout="auto" unmountOnExit>
                                 <List component="div" disablePadding>
-                                    <ListItemButton sx={{ pl: 3 }}>
-                                        <ListItemIcon>
-                                            <SettingsIcon />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Starred" />
-                                    </ListItemButton>
+                                    {
+                                        UseSetupList.Tax.map(page => (
+                                            <ListItemButton sx={{ pl: 4 }} key={page.name} onClick={() => handleRoutes("/Setup/Tax/" + page.name.replaceAll(" ", ""))} selected={module == "/Setup/Tax/" + page.name}>
+                                                <ListItemIcon>
+                                                    <page.icon />
+                                                </ListItemIcon>
+                                                <ListItemText primary={page.name} />
+                                            </ListItemButton>
+                                        ))
+                                    }
                                 </List>
                             </Collapse>
                         </Box>
 
                         <Box>
                             <ListItemButton
-                                onClick={handleClickSetupList}>
+                                onClick={() => handleClickChildToggle(5)}>
                                 <ListItemIcon>
                                     <SettingsIcon />
                                 </ListItemIcon>
                                 <ListItemText primary="More Setup" />
-                                {openSetupList ? <ExpandLess /> : <ExpandMore />}
+                                {CollapseChildIndexState == 5 ? <ExpandLess /> : <ExpandMore />}
                             </ListItemButton>
-                            <Collapse in={!openSetupList} timeout="auto" unmountOnExit>
+                            <Collapse in={CollapseChildIndexState == 5} timeout="auto" unmountOnExit>
                                 <List component="div" disablePadding>
-                                    <ListItemButton sx={{ pl: 3 }}>
-                                        <ListItemIcon>
-                                            <SettingsIcon />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Starred" />
-                                    </ListItemButton>
+                                    {
+                                        UseSetupList.More.map(page => (
+                                            <ListItemButton sx={{ pl: 4 }} key={page.name} onClick={() => handleRoutes("/Setup/More/" + page.name.replace(" ", ""))} selected={module == "/Setup/More/" + page.name}>
+                                                <ListItemIcon>
+                                                    <page.icon />
+                                                </ListItemIcon>
+                                                <ListItemText primary={page.name} />
+                                            </ListItemButton>
+                                        ))
+                                    }
                                 </List>
                             </Collapse>
                         </Box>
@@ -372,20 +455,26 @@ export default function RootLayout({
                 <Divider />
                 <Box>
                     <ListItemButton sx={{ pl: 1 }}
-                        onClick={handleClickSetupList}>
+                        onClick={() => handleClickToggle(3)} selected={ToggleCollapse == 3}>
                         <ListItemIcon>
                             <LineAxisIcon />
                         </ListItemIcon>
-                        <ListItemText primary="Reports" />
-                        {openSetupList ? <ExpandLess /> : <ExpandMore />}
+                        <ListItemText primary="Reports"
+                            sx={{
+                                fontWeight: ToggleCollapse === 2 ? 'bold' : 'normal', // Use 'bold' if ToggleCollapse is 2, otherwise 'normal' 
+                                // Add other styles as needed
+                            }} />
+                        {CollapseIndexState == 3 ? <ExpandLess /> : <ExpandMore />}
                     </ListItemButton>
                 </Box>
             </Drawer>
-            <Main open={open}>
+            <Main style={{height:'130vh'}} open={open}>
                 <DrawerHeader />
-                <Card sx={{ height: '80vh', width: '80vw', margin: 'auto', padding: '20px' }}>
-                    {children}
-                </Card>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <Card sx={{ height: 'auto', width: '110vw',  margin: 'auto', padding: '20px' }}>
+                        {children}
+                    </Card>
+                </LocalizationProvider> 
             </Main>
         </Box>
     );

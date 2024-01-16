@@ -1,0 +1,98 @@
+import { Label } from "@mui/icons-material";
+import { Alert, Autocomplete, Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogProps, DialogTitle, FormControlLabel, FormGroup, Grid, Tab, Tabs, TextField } from "@mui/material";
+import React, { forwardRef, useEffect, useState } from "react";
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
+import { CategoryService } from "@/services/DatabaseServices";
+
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+
+const schema = z.object({
+    // category_id: z.number(),
+    // code: z.string(),
+    name: z.string(),
+    // address: z.string(),
+    // is_active: z.boolean()
+})
+interface BusinessPartnersData extends z.infer<typeof schema> { }
+const BusinessPartnersModal = () => {
+    const [BusinessPartnersData, setBusinessPartnersData] = useState<BusinessPartnersData>()
+    const [category, setCategory] = useState([])
+    const [maxWidth, setMaxWidth] = React.useState<DialogProps['maxWidth']>('lg');
+    const [tabValue, setTabValue] = React.useState('1');
+    const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+        setTabValue(newValue)
+    }
+
+    const { register, handleSubmit, formState: { errors } } = useForm({
+        resolver: zodResolver(schema),
+    })
+
+    const fetchCategory = async () => {
+        let res = await CategoryService.getAll()
+        setCategory(() => res.data)
+        console.log(res.data)
+    }
+    const onSubmit = (data: any) => {
+        alert('working naaaa')
+        console.log('submito', data)
+    }
+
+    useEffect(() => {
+        fetchCategory()
+    }, [])
+
+
+    if (BusinessPartnersData?.name == "") { 
+        return <p>Loading...</p>; // You can replace this with a loading spinner or any other loading indicator
+    }
+    return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+            
+            <Dialog open={true}
+                fullWidth
+                maxWidth={maxWidth}
+            >
+                <DialogTitle>Business Partner</DialogTitle>
+                <DialogContent>
+
+                    {/* <Autocomplete
+                        disablePortal
+                        id="combo-box-demo"
+                        options={category ? category.map((cat: any) => ({ Label: cat.code, Value: cat.id })) : []}
+                        getOptionLabel={(option: any) => option.Label}
+                        sx={{ width: 300, marginTop: "20px" }}
+                        renderInput={(params) => <TextField {...params} label="Category" />}
+                    /> 
+                    <TextField label="Code" fullWidth className="mt-4" {...register("code", { value: BusinessPartnersData?.code })}></TextField> */}
+                    <TextField label="Name" fullWidth className="mt-4" {...register("name", { value: BusinessPartnersData?.name })}></TextField>
+                    <p>{errors.root?.message}</p>
+                    {/* <TextField label="Address" fullWidth className="mt-4" multiline  {...register("address", { value: BusinessPartnersData?.name })}
+                        maxRows={4}></TextField>
+
+                    <FormGroup>
+                        <FormControlLabel
+                            control={
+                                <Checkbox checked={true}  {...register("is_active", { value: BusinessPartnersData?.is_active })} />
+                            }
+                            label="Active"
+                        />
+                    </FormGroup> */}
+                </DialogContent>
+                <DialogActions className="d-flex justify-center">
+                    <Button variant="contained" type="submit" style={{ backgroundColor: 'green' }}>
+                        Save
+                    </Button>
+                    <Button variant="contained" style={{ backgroundColor: 'red' }} >
+                        Cancel
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </form>
+    )
+}
+export default BusinessPartnersModal
