@@ -40,39 +40,21 @@ interface EditToolbarProps {
     ) => void;
 }
 
-function EditToolbar(props: EditToolbarProps) {
-    const { setRows, setRowModesModel } = props;
 
-    const handleClick = () => {
-        const id = randomId();
-        setRows((oldRows) => [...oldRows, { id, name: '', code: '', isNew: true }]);
-        setRowModesModel((oldModel) => ({
-            ...oldModel,
-            [id]: { mode: GridRowModes.Edit, fieldToFocus: 'name' },
-        }));
-    };
-
-    return (
-        <GridToolbarContainer>
-            <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-                Add record
-            </Button>
-        </GridToolbarContainer>
-    );
-}
 
 interface ITable {
     _cols: GridColDef[],
     _rows: GridRowsProp,
     onSave: (data: any) => void;
     onDelete: (id: GridRowId) => void;
+    onCancel:  (id: GridRowId) => void;
     parentRef: React.RefObject<ChildProps | null>;
 }
-const Table: React.FC<ITable> = forwardRef(({ onSave, onDelete, _cols, _rows }, ref) => {
+const Table: React.FC<ITable> = forwardRef(({ onSave, onDelete,onCancel, _cols, _rows }, ref) => {
 
     React.useEffect(() => {
         // Iterate over the existing state and update the mode for each item
-        const updatedRowModesModel : any = {};
+        const updatedRowModesModel: any = {};
         Object.keys(rowModesModel).forEach(id => {
             updatedRowModesModel[id] = { mode: GridRowModes.View };
         });
@@ -86,8 +68,7 @@ const Table: React.FC<ITable> = forwardRef(({ onSave, onDelete, _cols, _rows }, 
 
     const [rows, setRows] = React.useState(initialRows);
     const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
-    let columns: GridColDef[] = [
-        ..._cols,
+    let columns: GridColDef[] = [ 
         {
             field: 'actions',
             type: 'actions',
@@ -111,7 +92,7 @@ const Table: React.FC<ITable> = forwardRef(({ onSave, onDelete, _cols, _rows }, 
                             icon={<CancelIcon />}
                             label="Cancel"
                             className="textPrimary"
-                            onClick={handleCancelClick(id)}
+                            onClick={() => onCancel(id)}
                             color="inherit"
                         />,
                     ];
@@ -133,10 +114,49 @@ const Table: React.FC<ITable> = forwardRef(({ onSave, onDelete, _cols, _rows }, 
                     />,
                 ];
             },
-        }]
+        },
+        ..._cols,
+    ]
 
+    let hasEditMode
+    const handleOnValidateEdit = () => {
 
+        // Check if there's already an edit mode in the existing rows
+        hasEditMode = Object.values(rowModesModel).some((row) => row.mode === GridRowModes.Edit);
 
+        // If there's an edit mode, you can handle it accordingly
+        if(hasEditMode) {
+            console.log("There's already an edit mode in the table. You can't add a new row.");
+            return false;
+        }
+        return true
+    }
+
+    function EditToolbar(props: EditToolbarProps) {
+        const { setRows, setRowModesModel } = props;
+
+        const handleClick = () => {
+
+            // validate if theres is already edit mode in table
+            if(handleOnValidateEdit()){
+                console.log(GridRowModes.Edit)
+                const id = randomId();
+                setRows((oldRows) => [ { id, isNew: true },...oldRows]);
+                setRowModesModel((oldModel) => ({
+                    ...oldModel,
+                    [id]: { mode: GridRowModes.Edit, fieldToFocus: 'code' },
+                }));
+            } 
+        };
+
+        return (
+            <GridToolbarContainer>
+                <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
+                    Add record
+                </Button>
+            </GridToolbarContainer>
+        );
+    }
     const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
         if (params.reason === GridRowEditStopReasons.rowFocusOut) {
             event.defaultMuiPrevented = true;
@@ -144,12 +164,15 @@ const Table: React.FC<ITable> = forwardRef(({ onSave, onDelete, _cols, _rows }, 
     };
 
     const handleEditClick = (id: GridRowId) => () => {
-        setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+         // validate if theres is already edit mode in table 
+        if(handleOnValidateEdit()){ 
+            setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } }); 
+        } 
     };
 
 
     const handleSaveClick = (id: GridRowId) => () => {
-        setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } }); 
+        setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
     };
 
     const handleDeleteClick = (id: GridRowId) => () => {

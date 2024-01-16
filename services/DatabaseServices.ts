@@ -1,3 +1,4 @@
+ 
 import { GridRowId } from '@mui/x-data-grid';
 import axiosInstance from './axiosInstance'
 class DatabaseServices {
@@ -51,7 +52,33 @@ class DatabaseServices {
     }
 
 }
+export const BookService = new DatabaseServices("BookSetup");
+export const ChartclassService = new DatabaseServices("ChartclassSetup");
+export const ChartgroupService = new DatabaseServices("ChartgroupSetup");
+export const ChartofaccountService = new DatabaseServices("ChartofaccountSetup");
 
+export const AgingService = new DatabaseServices("AgingSetup"); 
 export const BankService = new DatabaseServices("BankSetup");
-export const CurrencyService = new DatabaseServices("UserSetup");
+export const IndustryService = new DatabaseServices("IndustrySetup");
+export const CurrencyService = new DatabaseServices("CurrencySetup"); 
+export const CategoryService = new DatabaseServices("CategorySetup"); 
+export const DepartmentService = new DatabaseServices("DepartmentSetup"); 
+export const ProjectService = new DatabaseServices("ProjectSetup"); 
+export const TermsService = new DatabaseServices("TermsSetup");  
+export const InputVatService = new DatabaseServices("InputvatSetup");  
+export const OutputVatService = new DatabaseServices("OutputvatSetup"); 
+export const ExpandedtaxService = new DatabaseServices("ExpandedtaxSetup"); 
+export const FinaltaxService = new DatabaseServices("FinaltaxSetup"); 
+
+export const CompanySetupService = new DatabaseServices("CompanySetup"); 
+
+
+
+
+
+
+
+
+
+
 

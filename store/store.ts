@@ -1,15 +1,26 @@
 // store.js
-import { InputvatService } from '@/services/DatabaseServices';
-import create from 'zustand';
+import { BookService, CurrencyService } from '@/services/DatabaseServices'; 
+import { create } from 'zustand';
 
-const useState = create((set) => {
-  return {
-      counter: 0,
-      get: async () => {
-          const { data } = await InputvatService.getAll();
-          set({
-              counter: data.counter,
-          });
+const useStore = create((set) => {
+  return { 
+      BooksList:[],
+      getBooks: async () =>{
+        try {
+          const data = await BookService.getAll();
+          set({BooksList:data})
+        } catch (error) { 
+          console.error('Error fetching books:', error);
+        }
+      },
+      CurrencyList:[],
+      getCurrency: async () =>{
+        try {
+          const data = await CurrencyService.getAll();
+          set({CurrencyList:data})
+        } catch (error) { 
+          console.error('Error fetching books:', error);
+        }
       },
       addTodo: (text :any) =>
         set((state :any) => ({
@@ -25,4 +36,4 @@ const useState = create((set) => {
   };
 });
 
-export default useState;
+export default useStore;

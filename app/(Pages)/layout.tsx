@@ -35,11 +35,13 @@ import { ExpandLess, ExpandMore, Height, StarBorder } from '@mui/icons-material'
 import { Avatar, Badge, Breadcrumbs, Card, Collapse, Link, Menu, MenuItem, Stack, Tooltip } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import { getRoutePath } from './routes'
-const inter = Inter({ subsets: ['latin'] })
+import { LocalizationProvider } from "@mui/x-date-pickers";
+const inter = Inter({ subsets: ['latin'] })  
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 import { useRouter } from 'next/navigation';
 import { UseSetupList, UseTransactionNav } from '@/components/Static/Navitems';
-const drawerWidth = 260;
+const drawerWidth = 280;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
     open?: boolean;
@@ -144,11 +146,11 @@ export default function RootLayout({
 
     const handleRoutes = (target: string) => {
         router.push(target);
-        setModule(()=>target);
+        setModule(() => target);
     }
     const transactionList = UseTransactionNav;
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex',zoom:'80%' }}>
             <CssBaseline />
             <AppBar
                 position="fixed"
@@ -254,7 +256,29 @@ export default function RootLayout({
                         <ListItemIcon>
                             <SettingsIcon />
                         </ListItemIcon>
-                        <ListItemText primary="Transactions"
+                        <ListItemText primary="Sales Management"
+                            sx={{
+                                fontWeight: ToggleCollapse === 2 ? 'bold' : 'normal', // Use 'bold' if ToggleCollapse is 2, otherwise 'normal' 
+                                // Add other styles as needed
+                            }} />
+                        {ToggleCollapse == 1 ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton>
+                    <ListItemButton sx={{ pl: 1 }} onClick={() => handleClickToggle(1)} selected={ToggleCollapse == 1}>
+                        <ListItemIcon>
+                            <SettingsIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Purchasing Management"
+                            sx={{
+                                fontWeight: ToggleCollapse === 2 ? 'bold' : 'normal', // Use 'bold' if ToggleCollapse is 2, otherwise 'normal' 
+                                // Add other styles as needed
+                            }} />
+                        {ToggleCollapse == 1 ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton>
+                    <ListItemButton sx={{ pl: 1 }} onClick={() => handleClickToggle(1)} selected={ToggleCollapse == 1}>
+                        <ListItemIcon>
+                            <SettingsIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Accounting Management"
                             sx={{
                                 fontWeight: ToggleCollapse === 2 ? 'bold' : 'normal', // Use 'bold' if ToggleCollapse is 2, otherwise 'normal' 
                                 // Add other styles as needed
@@ -264,7 +288,7 @@ export default function RootLayout({
                     <Collapse in={ToggleCollapse == 1} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
                             {transactionList.map(page => (
-                                <ListItemButton sx={{ pl: 2 }} onClick={() => handleRoutes(page.name)} selected={module == "/Transaction/"+page.name}>
+                                <ListItemButton sx={{ pl: 2 }} key={page.name} onClick={() => handleRoutes(page.name)} selected={module == "/Transaction/" + page.name}>
                                     <ListItemIcon>
                                         <page.icon />
                                     </ListItemIcon>
@@ -293,7 +317,7 @@ export default function RootLayout({
                         <List>
                             {
                                 UseSetupList.SystemConfig.map(page => (
-                                    <ListItemButton sx={{ pl: 2 }} onClick={() => handleRoutes("/Setup/" + page.name)} selected={module == "/Setup/"+page.name}>
+                                    <ListItemButton sx={{ pl: 2 }} key={page.name} onClick={() => handleRoutes("/Setup/" + page.name.replaceAll(" ", ""))} selected={module == "/Setup/" + page.name.replaceAll(" ", "")}>
                                         <ListItemIcon>
                                             <page.icon />
                                         </ListItemIcon>
@@ -315,7 +339,7 @@ export default function RootLayout({
                                 <List component="div" disablePadding>
                                     {
                                         UseSetupList.Accounts.map(page => (
-                                            <ListItemButton sx={{ pl: 4 }}>
+                                            <ListItemButton sx={{ pl: 4 }} key={page.name}>
                                                 <ListItemIcon>
                                                     <page.icon />
                                                 </ListItemIcon>
@@ -340,7 +364,7 @@ export default function RootLayout({
                                 <List component="div" disablePadding>
                                     {
                                         UseSetupList.Book.map(page => (
-                                            <ListItemButton sx={{ pl: 4 }}>
+                                            <ListItemButton sx={{ pl: 4 }} key={page.name} onClick={() => handleRoutes("/Setup/Book/" + page.name.replaceAll(" ", ""))} selected={module == "/Setup/Tax/" + page.name}>
                                                 <ListItemIcon>
                                                     <page.icon />
                                                 </ListItemIcon>
@@ -365,7 +389,7 @@ export default function RootLayout({
                                 <List component="div" disablePadding>
                                     {
                                         UseSetupList.Charts.map(page => (
-                                            <ListItemButton sx={{ pl: 4 }}>
+                                            <ListItemButton key={page.name} sx={{ pl: 4 }} onClick={() => handleRoutes("/Setup/Chart/" + page.name.replaceAll(" ", ""))} selected={module == "/Setup/Chart/" + page.name}>
                                                 <ListItemIcon>
                                                     <page.icon />
                                                 </ListItemIcon>
@@ -390,7 +414,7 @@ export default function RootLayout({
                                 <List component="div" disablePadding>
                                     {
                                         UseSetupList.Tax.map(page => (
-                                            <ListItemButton sx={{ pl: 4 }}>
+                                            <ListItemButton sx={{ pl: 4 }} key={page.name} onClick={() => handleRoutes("/Setup/Tax/" + page.name.replaceAll(" ", ""))} selected={module == "/Setup/Tax/" + page.name}>
                                                 <ListItemIcon>
                                                     <page.icon />
                                                 </ListItemIcon>
@@ -415,7 +439,7 @@ export default function RootLayout({
                                 <List component="div" disablePadding>
                                     {
                                         UseSetupList.More.map(page => (
-                                            <ListItemButton sx={{ pl: 4 }}  onClick={() => handleRoutes("/Setup/More/" + page.name.replace(" ",""))} selected={module == "/Setup/More/"+page.name}>
+                                            <ListItemButton sx={{ pl: 4 }} key={page.name} onClick={() => handleRoutes("/Setup/More/" + page.name.replace(" ", ""))} selected={module == "/Setup/More/" + page.name}>
                                                 <ListItemIcon>
                                                     <page.icon />
                                                 </ListItemIcon>
@@ -444,11 +468,13 @@ export default function RootLayout({
                     </ListItemButton>
                 </Box>
             </Drawer>
-            <Main open={open}>
+            <Main style={{height:'130vh'}} open={open}>
                 <DrawerHeader />
-                <Card sx={{ height: '80vh', width: '80vw', margin: 'auto', padding: '20px' }}>
-                    {children}
-                </Card>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <Card sx={{ height: 'auto', width: '110vw',  margin: 'auto', padding: '20px' }}>
+                        {children}
+                    </Card>
+                </LocalizationProvider> 
             </Main>
         </Box>
     );

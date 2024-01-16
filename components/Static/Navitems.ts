@@ -22,7 +22,7 @@ export const UseTransactionNav = [
         icon: ReceiptIcon
     },
     {
-        name: "Official Receipt",
+        name: "Payment Receipt",
         icon: PointOfSaleIcon
     },
     {
@@ -30,7 +30,7 @@ export const UseTransactionNav = [
         icon:  ShoppingBagIcon
     },
     {
-        name: "Check Voucher",
+        name: "Payment Voucher",
         icon: PaymentsIcon
     },
     {
@@ -42,7 +42,7 @@ export const UseTransactionNav = [
         icon: BrokenImageIcon
     },
     {
-        name: "Transaction Viewer",
+        name: "Search Transaction",
         icon: SearchIcon
     }
 ]
@@ -54,11 +54,11 @@ export const UseSetupList = {
             icon: DashboardIcon
         },
         {
-            name: "Currency",
+            name: "Currency Rate",
             icon: ReceiptIcon
         }, 
         {
-            name: "Aging Range",
+            name: "Aging",
             icon: ReceiptIcon
         },  
         {
@@ -128,35 +128,35 @@ export const UseSetupList = {
     ],
     More:[
         {
-            name: "Currency Setup",
+            name: "Currency",
             icon: ReceiptIcon
         },
         {
-            name: "Industry Setup",
+            name: "Industry",
             icon: ReceiptIcon
         }, 
         {
-            name: "Category Setup",
+            name: "Category",
             icon: ReceiptIcon
         }, 
         {
-            name: "Bank Setup",
+            name: "Bank",
             icon: ReceiptIcon
         }, 
         {
-            name: "Department Setup",
+            name: "Department",
             icon: ReceiptIcon
         }, 
         {
-            name: "Project Setup",
+            name: "Project",
             icon: ReceiptIcon
         }, 
         {
-            name: "Terms Setup",
+            name: "Terms",
             icon: ReceiptIcon
         }, 
         {
-            name: "Project Unit Setup",
+            name: "Project Unit",
             icon: ReceiptIcon
         }, 
         

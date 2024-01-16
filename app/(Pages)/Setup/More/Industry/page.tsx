@@ -6,7 +6,7 @@ import { DataGrid, GridActionsCellItem, GridColDef, GridRowId, GridRowModel, Gri
 
 import Swal from 'sweetalert2';
 import Table from "@/components/EditableTable";
-import { CurrencyService } from "@/services/DatabaseServices";
+import { IndustryService } from "@/services/DatabaseServices";
 import { error } from "console";
 export default function Bank() {
     const TableComponentRef = useRef(null);
@@ -20,10 +20,10 @@ export default function Bank() {
     const handleSaveButton = async (newRow: GridRowModel) => {
         let res;
         if (typeof newRow.id === 'number') {
-            res = await CurrencyService.put(newRow)
+            res = await IndustryService.put(newRow)
         } else {
             delete newRow.id
-            res = await CurrencyService.post(newRow)
+            res = await IndustryService.post(newRow)
         }
 
         if (res == 200) {
@@ -34,9 +34,8 @@ export default function Bank() {
             setTimeout(() => {
                 setForceUpdateFlag((prev) => prev + 1);
             }, 500);
-        } else { 
+        } else {
             setErrors(res.response.data.errors)
-            // Swal.fire("Changes are not saved", res.response.data.errors.code[0] + 'and' + res.response.data.errors.name[0], "error"); 
         }
     }
     const handleDeleteButton = (id: GridRowId) => {
@@ -47,7 +46,7 @@ export default function Bank() {
         }).then(async (result) => {
             let response;
             if (result.isConfirmed) {
-                response = await CurrencyService.delete({ id })
+                response = await IndustryService.delete({ id })
                 if (response == 200) {
                     Swal.fire("Saved!", "", "success");
                     fetchData()
@@ -70,7 +69,7 @@ export default function Bank() {
     // let rows : GridRowsProp = []
     const fetchData = async () => {
         try {
-            let res = await CurrencyService.getAll()
+            let res = await IndustryService.getAll()
             if (res.status == 200) {
                 if (res.data.length === 0) {
                     setRows(() => [])
@@ -120,6 +119,6 @@ export default function Bank() {
                     </Grid>
                 </Grid>
             </Box>
-        </div> 
+        </div>
     )
 }
