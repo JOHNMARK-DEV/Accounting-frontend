@@ -6,9 +6,9 @@ import { DataGrid, GridActionsCellItem, GridColDef, GridRowId, GridRowModel, Gri
 
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Autocomplete from '@mui/material/Autocomplete';
-import CustomButtons from "@/components/CustomButtons";
+import CustomButtons from "@/components/Buttons/CustomButtons";
 import Swal from 'sweetalert2';
-import Table from "@/components/SelectableTable";
+import Table from "@/components/Tables/SelectableTable";
 import { ChartclassService, ChartgroupService, ChartofaccountService } from "@/services/DatabaseServices";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { Check, Label, Try } from "@mui/icons-material";
@@ -52,19 +52,36 @@ export default function ChartofAccount() {
         resolver: zodResolver(schema),
     });
 
-    const onSubmit = (data: any) => {
+    const onSubmit = async (data: any) => {
         try {
+            let res;
             let values = data
             values.is_input_vat_importation = data.is_input_vat_importation ? 1 : 0
             values.is_restatement = data.is_restatement ? 1 : 0
             values.is_unit_applicable = data.is_unit_applicable ? 1 : 0
-            values.is_no_compute = data.is_no_compute ? 1 : 0
-            ChartofaccountService.post(data)
+            values.is_no_compute = data.is_no_compute ? 1 : 0 
+ 
+            // if (typeof newRow.id === 'number') {
+            //     res = await ChartgroupService.put(newRow)
+            // } else {
+            //     delete newRow.id
+            //     res = ChartofaccountService.post(data)
+            // }
+            res = await ChartofaccountService.post(data)
+
+            if (res == 200) {
+                setOpenModal(!openModal)
+                Swal.fire("Saved!", "", "success");
+    
+                setErrors(() => [])
+                fetchData() 
+            } else { 
+                setErrors(res.response.data.errors)
+                // Swal.fire("Changes are not saved", res.response.data.errors.code[0] + 'and' + res.response.data.errors.name[0], "error"); 
+            }
         } catch (error) {
             console.log(error)
-        }
-
-
+        } 
     }
     const handleDeleteButton = (id: GridRowId) => {
         Swal.fire({

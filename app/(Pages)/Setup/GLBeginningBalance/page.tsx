@@ -6,9 +6,9 @@ import { DataGrid, GridActionsCellItem, GridColDef, GridRowId, GridRowModel, Gri
 
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Autocomplete from '@mui/material/Autocomplete';
-import CustomButtons from "@/components/CustomButtons";
+import CustomButtons from "@/components/Buttons/CustomButtons";
 import Swal from 'sweetalert2';
-import Table from "@/components/SelectableTable";
+import Table from "@/components/Tables/SelectableTable";
 import { ChartclassService, ChartgroupService, ChartofaccountService } from "@/services/DatabaseServices"; 
 import SettingsModal from '@/components/Modals/SettingsModal'
 

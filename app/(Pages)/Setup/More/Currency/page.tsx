@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId, GridRowModel, GridRowModes, GridRowsProp, GridValidRowModel, GridValueGetterParams } from '@mui/x-data-grid';
 
 import Swal from 'sweetalert2';
-import Table from "@/components/EditableTable";
+import Table from "@/components/Tables/EditableTable";
 import { CurrencyService } from "@/services/DatabaseServices";
 import { error } from "console";
 export default function Bank() {

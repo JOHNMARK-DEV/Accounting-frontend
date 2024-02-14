@@ -3,17 +3,38 @@ import { Alert, Box, Button, Checkbox, Collapse, Dialog, DialogContent, DialogCo
 import React, { useEffect, useRef, useState } from "react";
 
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId, GridRowModel, GridRowModes, GridRowsProp, GridValidRowModel, GridValueGetterParams } from '@mui/x-data-grid';
- 
-import CustomButtons from "@/components/CustomButtons"; 
-import Table from "@/components/SelectableTable";   
+
+import CustomButtons from "@/components/Buttons/CustomButtons";
+import Table from "@/components/Tables/SelectableTable";
 import BusinessPartnersModal from "@/components/Modals/BusinessPartnersModal";
-export default function ChartofAccount() {
-    const TableComponentRef = useRef(null); 
+import { BusinesspartnerSetupService } from "@/services/DatabaseServices";
+import Swal from "sweetalert2";
+
+interface Iform {
+    category_id: number,
+    code: string,
+    name: string
+}
+
+export default function ChartofAccount() { 
     const [openModal, setOpenModal] = useState(false)
-    const [editable, setEditable] = useState(false)
-    const [forceUpdateFlag, setForceUpdateFlag] = useState(0);
+    const TableComponentRef = useRef(null);
+    const [formData, setFormData] = useState<Iform>({
+        category_id: 0,
+        code: '',
+        name: '',
+    });
+
+
+
+
+    
     const handleEditButton = () => {
-        setEditable(!editable)
+        // setEditable(!editable)
+    }
+
+    const handleCancelButton = () => {
+        setOpenModal(!openModal);
     }
 
     const handleAddButton = () => {
@@ -21,18 +42,37 @@ export default function ChartofAccount() {
     }
 
     const handleDeleteButton = (id: GridRowId) => {
-       
+
     }
-
-
 
     const [rows, setRows] = useState<GridRowsProp>([])
     const fetchData = async () => {
-        
+        let res = await BusinesspartnerSetupService.getAll()
+        setRows(()=>res.data)
     }
- 
+    const handleFormSubmit = async (data: any) => {  
+        let res;
+        if (typeof data.id === 'number') {
+            res = await BusinesspartnerSetupService.put(data)
+        } else {
+            delete data.id
+            res = await BusinesspartnerSetupService.post(data)
+            
+            Swal.fire("Saved!", "", "success");  
+        }
+
+        setOpenModal(!openModal);
+        // if (res == 200) {
+        //     Swal.fire("Saved!", "", "success");  
+        //     fetchData() 
+        // } else { 
+        //     // setErrors(res.response.data.errors)
+        //     // Swal.fire("Changes are not saved", res.response.data.errors.code[0] + 'and' + res.response.data.errors.name[0], "error"); 
+        // }
+    }
+
     useEffect(() => {
-        
+        fetchData()
     }, [])
 
     const columns: GridColDef[] = [
@@ -68,7 +108,7 @@ export default function ChartofAccount() {
                 <Grid container>
                     <Grid item xs={3}>
                         <CustomButtons isShowSaveBtn={false} onClickAdd={() => handleAddButton()} ButtonNames={['Add', 'Edit', 'Delete', 'Print']} />
-                    </Grid> 
+                    </Grid>
                 </Grid>
 
                 <Divider sx={{ marginTop: "10px" }} />
@@ -77,8 +117,12 @@ export default function ChartofAccount() {
                         <Table onDelete={handleDeleteButton} parentRef={TableComponentRef} _cols={columns} _rows={rows} />
                     </Grid>
                 </Grid>
-                <BusinessPartnersModal />
-            </div> 
+                <BusinessPartnersModal
+                    onSubmitToParent={(data) => handleFormSubmit(data)} 
+                    isOpenModal={openModal}
+                    onCancel={handleCancelButton}
+                />
+            </div>
         </>
     )
 

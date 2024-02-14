@@ -1,3 +1,4 @@
+'use client'
 import * as React from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -15,11 +16,11 @@ interface CustomButtonsProps {
   onClickNext?: () => void | undefined;
   onClickSave?: () => void | undefined;
   onClickCancel?: () => void | undefined;
+
+  onAddEntry?: () => void | undefined;
+  onRemoveEntry?: () => void | undefined;
 }
-export default function CustomButtons({ ButtonNames, isShowSaveBtn, onClickAdd, onClickEdit, onClickDelete, onClickCancelTrans, onClickPrint, onClickPrev, onClickNext, onClickSave, onClickCancel }: CustomButtonsProps) {
-  React.useEffect(() => {
-    console.log(ButtonNames)
-  })
+export default function CustomButtons({ ButtonNames, isShowSaveBtn, onClickAdd, onClickEdit, onClickDelete, onClickCancelTrans, onClickPrint, onClickPrev, onClickNext, onClickSave, onClickCancel,onAddEntry,onRemoveEntry }: CustomButtonsProps) {
 
   isShowSaveBtn = isShowSaveBtn === undefined ? true : isShowSaveBtn;
 
@@ -46,6 +47,10 @@ export default function CustomButtons({ ButtonNames, isShowSaveBtn, onClickAdd, 
         return onClickSave;
       case 'Cancel':
         return onClickCancel;
+      case 'Add Entry':
+        return onAddEntry;
+      case 'Remove Entry':
+        return onRemoveEntry;
       default:
         return undefined;
     }

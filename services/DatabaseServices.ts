@@ -71,6 +71,7 @@ export const ExpandedtaxService = new DatabaseServices("ExpandedtaxSetup");
 export const FinaltaxService = new DatabaseServices("FinaltaxSetup"); 
 
 export const CompanySetupService = new DatabaseServices("CompanySetup"); 
+export const BusinesspartnerSetupService = new DatabaseServices("BusinesspartnerSetup"); 
 
 
 

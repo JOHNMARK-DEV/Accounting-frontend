@@ -2,7 +2,7 @@ import { Interests, Label } from "@mui/icons-material";
 import { Dialog, DialogTitle, DialogContent, DialogContentText, TextField, Autocomplete, FormGroup, FormControlLabel, Checkbox, Stack, Button, Box, FormControl, FormHelperText, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { register } from "module";
-import React, { Dispatch, forwardRef, useEffect, useReducer, useState } from "react";
+import React, { Dispatch, forwardRef, memo, useEffect, useReducer, useState } from "react";
 import { Interface } from "readline";
 import useStore from "@/store/store";
 
@@ -42,7 +42,7 @@ const SettingsModal: React.FC<ISettings> = forwardRef(({ Begbal_date, Book, Curr
     setFormData({ ...formData, Begbal_date: currentDate, Currency: 0, Book: 0, })
   }, [])
 
- console.log('BooksList',BooksList);
+//  console.log('BooksList',BooksList);
 
   return (
     <Dialog open={toggleModal}>
@@ -53,7 +53,7 @@ const SettingsModal: React.FC<ISettings> = forwardRef(({ Begbal_date, Book, Curr
           <Autocomplete
             disablePortal
             id="combo-box-demo"
-            options={BooksList.data ? BooksList.data.map((book: any) => ({ Label: book.code, Value: book.id })) : []}
+            options={BooksList ? BooksList.map((book: any) => ({ Label: book.code, Value: book.id })) : []}
             getOptionLabel={(option: any) => option.Label}
             sx={{ width: 300, marginTop: "20px" }}
             onChange={(event, newValue) => setFormData({ ...formData, Book: newValue })}
@@ -62,7 +62,7 @@ const SettingsModal: React.FC<ISettings> = forwardRef(({ Begbal_date, Book, Curr
           <Autocomplete
             disablePortal
             id="combo-box-demo"
-            options={CurrencyList.data ? CurrencyList.data.map((currency: any) => ({ Label: currency.name, Value: currency.id })) : []}
+            options={CurrencyList ? CurrencyList.map((currency: any) => ({ Label: currency.name, Value: currency.id })) : []}
             getOptionLabel={(option: any) => option.Label}
             sx={{ width: 300, marginTop: "20px" }}
             onChange={(event, newValue) => setFormData({ ...formData, Currency: newValue })}

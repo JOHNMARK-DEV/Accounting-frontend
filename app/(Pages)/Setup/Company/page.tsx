@@ -1,5 +1,5 @@
 "use client"
-import CustomButtons from "@/components/CustomButtons";
+import CustomButtons from "@/components/Buttons/CustomButtons";
 import { Box, Button, Checkbox, Divider, FormControlLabel, FormGroup, Grid, Stack, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useForm } from 'react-hook-form';

@@ -5,6 +5,9 @@ import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import PersonAdd from '@mui/icons-material/PersonAdd';
+import Settings from '@mui/icons-material/Settings';
+import Logout from '@mui/icons-material/Logout';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
@@ -14,6 +17,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import MenuBookTwoToneIcon from '@mui/icons-material/MenuBookTwoTone';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -32,16 +37,21 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ExpandLess, ExpandMore, Height, StarBorder } from '@mui/icons-material';
-import { Avatar, Badge, Breadcrumbs, Card, Collapse, Link, Menu, MenuItem, Stack, Tooltip } from '@mui/material';
+import { Avatar, Badge, Breadcrumbs, Button, Card, Collapse, Link, Menu, MenuItem, Stack, Tooltip } from '@mui/material';
+import TaskIcon from '@mui/icons-material/Task';
 import Paper from '@mui/material/Paper';
 import { getRoutePath } from './routes'
 import { LocalizationProvider } from "@mui/x-date-pickers";
-const inter = Inter({ subsets: ['latin'] })  
+const inter = Inter({ subsets: ['latin'] })
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-
+import useStore from "@/store/store";
 import { useRouter } from 'next/navigation';
-import { UseSetupList, UseTransactionNav } from '@/components/Static/Navitems';
-const drawerWidth = 280;
+import { UseSetupList, UseAccountingManagementNav } from '@/components/Static/Navitems';
+import useChooseBookModal from '@/components/Modals/useChooseBookModal';
+const drawerWidth = 250;
+
+
+
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
     open?: boolean;
@@ -104,8 +114,18 @@ export default function RootLayout({
 }: {
     children: React.ReactNode
 }) {
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const openAccountSettings = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
     const theme = useTheme();
     const [open, setOpen] = React.useState(true);
+    const [Book, setBook] = React.useState(false);
     const [module, setModule] = React.useState("Dashboard");
     const [ToggleCollapse, setToggleCollapse] = React.useState(0);
     const [ChildToggleCollapse, setChildToggleCollapse] = React.useState(0);
@@ -113,6 +133,11 @@ export default function RootLayout({
 
     const [CollapseIndexState, setCollapseIndexState] = React.useState(0);
     const [CollapseChildIndexState, setCollapseChildIndexState] = React.useState(0);
+
+    const {
+        SelectedBook
+    }: any = useStore()
+
     const handleClickToggle = (index: number = 0) => {
 
         if (CollapseIndexState != index) {
@@ -148,15 +173,21 @@ export default function RootLayout({
         router.push(target);
         setModule(() => target);
     }
-    const transactionList = UseTransactionNav;
+    const AccountingManagementList = UseAccountingManagementNav;
+    const ToggleBookModal = () => {
+        setBook(!Book)
+    }
+    const chooseBookModal = useChooseBookModal(ToggleBookModal);
+
+
     return (
-        <Box sx={{ display: 'flex',zoom:'80%' }}>
-            <CssBaseline />
+        <Box sx={{ display: 'flex', backgroundColor: 'white' }}>
+            {/* <CssBaseline /> */}
             <AppBar
                 position="fixed"
                 open={open}
-                sx={{ backgroundColor: 'grey' }}
             >
+                {Book && chooseBookModal}
                 <Toolbar>
                     <IconButton
                         color="inherit"
@@ -175,31 +206,126 @@ export default function RootLayout({
                         sx={{ width: '100vw' }}
                     >
                         <Box sx={{ display: 'flex' }}>
-                            <img src="/images/Fudz_logo.ico" alt="" width={40} height={40} />
+                            {/* <img src="/images/Fudz_logo.ico" alt="" width={40} height={40} /> */}
                             <Box sx={{ paddingLeft: '10px' }}>
-                                <Typography variant="h6" noWrap component="div">
-                                    Company
+                                <Typography
+                                    variant="h6"
+                                    noWrap
+                                    component="div">
+                                    Selected Book :
                                 </Typography>
-                                <Breadcrumbs
-                                    separator={<NavigateNextIcon fontSize="small" sx={{ color: 'white' }} />}
-                                    aria-label="breadcrumb"
-                                >
-                                    {breadcrumbs}
-                                </Breadcrumbs>
+                            </Box>
+                            <Box sx={{ marginLeft: '20px' }}>
+                                <Button
+                                    onClick={ToggleBookModal}
+                                    className='flex justify-between w-64 border p-2 border-indigo-600 bg-white text-black text-xl font-bold'>
+                                    <span>
+                                        <MenuBookTwoToneIcon />
+                                    </span>
+                                    <div>
+                                        {SelectedBook.code}
+                                    </div>
+                                    <span>
+                                        <ExpandMoreIcon />
+                                    </span>
+                                </Button>
                             </Box>
                         </Box>
-                        <Box sx={{ flexGrow: 0 }}>
-                            <IconButton className='mx-10'>
-                                <Badge badgeContent={1} color="secondary">
-                                    <NotificationsNoneOutlinedIcon sx={{ color: 'white' }} />
+                        <Box
+                            sx={{ flexGrow: 0 }}>
+                            <IconButton
+                                className='mx-10'>
+                                <Badge
+                                    badgeContent={1}
+                                    color="secondary">
+                                    <NotificationsNoneOutlinedIcon
+                                        sx={{ color: 'white' }} />
                                 </Badge>
                             </IconButton>
 
-                            <Tooltip title="Open settings">
-                                <IconButton sx={{ p: 0 }}>
-                                    <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+
+                            {/* <IconButton
+                                    sx={{ p: 0 }}>
+                                    <Avatar
+                                        alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                </IconButton> */}
+                            <Tooltip title="Account settings">
+                                <IconButton
+                                    onClick={handleClick}
+                                    size="small"
+                                    sx={{ ml: 2 }}
+                                    aria-controls={openAccountSettings ? 'account-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={openAccountSettings ? 'true' : undefined}
+                                >
+                                    <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
                                 </IconButton>
                             </Tooltip>
+                            <Menu
+                                anchorEl={anchorEl}
+                                id="account-menu"
+                                open={openAccountSettings}
+                                onClose={handleClose}
+                                onClick={handleClose}
+                                PaperProps={{
+                                    elevation: 0,
+                                    sx: {
+                                        overflow: 'visible',
+                                        filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                                        mt: 1.5,
+                                        '& .MuiAvatar-root': {
+                                            width: 32,
+                                            height: 32,
+                                            ml: -0.5,
+                                            mr: 1,
+                                        },
+                                        '&::before': {
+                                            content: '""',
+                                            display: 'block',
+                                            position: 'absolute',
+                                            top: 0,
+                                            right: 14,
+                                            width: 10,
+                                            height: 10,
+                                            bgcolor: 'background.paper',
+                                            transform: 'translateY(-50%) rotate(45deg)',
+                                            zIndex: 0,
+                                        },
+                                    },
+                                }}
+                                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                            >
+                                <MenuItem onClick={handleClose}>
+                                    <Avatar /> My Profile
+                                </MenuItem>
+                                <MenuItem onClick={handleClose}> 
+                                    <ListItemIcon>
+                                        <TaskIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    My Activities
+                                </MenuItem>
+                                <Divider />
+                                {/* <MenuItem onClick={handleClose}>
+                                    <ListItemIcon>
+                                        <PersonAdd fontSize="small" />
+                                    </ListItemIcon>
+                                    Add another account
+                                </MenuItem> */}
+                                {/* <MenuItem onClick={handleClose}>
+                                    <ListItemIcon>
+                                        <Settings fontSize="small" />
+                                    </ListItemIcon>
+                                    Settings
+                                </MenuItem> */}
+                                <MenuItem onClick={handleClose}>
+                                    <ListItemIcon>
+                                        <Logout fontSize="small" />
+                                    </ListItemIcon>
+                                    Logout
+                                </MenuItem>
+                            </Menu>
+
 
                             <Menu
                                 sx={{ mt: '45px' }}
@@ -252,7 +378,7 @@ export default function RootLayout({
                         </ListItemIcon>
                         <ListItemText primary={'Dashboard'} />
                     </ListItemButton>
-                    <ListItemButton sx={{ pl: 1 }} onClick={() => handleClickToggle(1)} selected={ToggleCollapse == 1}>
+                    {/* <ListItemButton sx={{ pl: 1 }} >
                         <ListItemIcon>
                             <SettingsIcon />
                         </ListItemIcon>
@@ -261,9 +387,9 @@ export default function RootLayout({
                                 fontWeight: ToggleCollapse === 2 ? 'bold' : 'normal', // Use 'bold' if ToggleCollapse is 2, otherwise 'normal' 
                                 // Add other styles as needed
                             }} />
-                        {ToggleCollapse == 1 ? <ExpandLess /> : <ExpandMore />}
+                        {ToggleCollapse == 111 ? <ExpandLess /> : <ExpandMore />}
                     </ListItemButton>
-                    <ListItemButton sx={{ pl: 1 }} onClick={() => handleClickToggle(1)} selected={ToggleCollapse == 1}>
+                    <ListItemButton sx={{ pl: 1 }}  >
                         <ListItemIcon>
                             <SettingsIcon />
                         </ListItemIcon>
@@ -272,8 +398,19 @@ export default function RootLayout({
                                 fontWeight: ToggleCollapse === 2 ? 'bold' : 'normal', // Use 'bold' if ToggleCollapse is 2, otherwise 'normal' 
                                 // Add other styles as needed
                             }} />
-                        {ToggleCollapse == 1 ? <ExpandLess /> : <ExpandMore />}
+                        {ToggleCollapse == 111 ? <ExpandLess /> : <ExpandMore />}
                     </ListItemButton>
+                    <ListItemButton sx={{ pl: 1 }}  >
+                        <ListItemIcon>
+                            <SettingsIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Project Management"
+                            sx={{
+                                fontWeight: ToggleCollapse === 2 ? 'bold' : 'normal', // Use 'bold' if ToggleCollapse is 2, otherwise 'normal' 
+                                // Add other styles as needed
+                            }} />
+                        {ToggleCollapse == 111 ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton> */}
                     <ListItemButton sx={{ pl: 1 }} onClick={() => handleClickToggle(1)} selected={ToggleCollapse == 1}>
                         <ListItemIcon>
                             <SettingsIcon />
@@ -287,8 +424,8 @@ export default function RootLayout({
                     </ListItemButton>
                     <Collapse in={ToggleCollapse == 1} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
-                            {transactionList.map(page => (
-                                <ListItemButton sx={{ pl: 2 }} key={page.name} onClick={() => handleRoutes(page.name)} selected={module == "/Transaction/" + page.name}>
+                            {AccountingManagementList.map(page => (
+                                <ListItemButton sx={{ pl: 2 }} key={page.name} onClick={() => handleRoutes("/AccountingManagement/" + page.name.replaceAll(" ", ""))} selected={module == "/Transaction/" + page.name}>
                                     <ListItemIcon>
                                         <page.icon />
                                     </ListItemIcon>
@@ -459,7 +596,7 @@ export default function RootLayout({
                         <ListItemIcon>
                             <LineAxisIcon />
                         </ListItemIcon>
-                        <ListItemText primary="Reports"
+                        <ListItemText primary="Reports Management"
                             sx={{
                                 fontWeight: ToggleCollapse === 2 ? 'bold' : 'normal', // Use 'bold' if ToggleCollapse is 2, otherwise 'normal' 
                                 // Add other styles as needed
@@ -468,14 +605,16 @@ export default function RootLayout({
                     </ListItemButton>
                 </Box>
             </Drawer>
-            <Main style={{height:'130vh'}} open={open}>
+            <Main style={{ overflow: 'auto', backgroundColor: 'white' }} open={open}>
                 <DrawerHeader />
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <Card sx={{ height: 'auto', width: '110vw',  margin: 'auto', padding: '20px' }}>
+                    {/* <Card sx={{ height: 'auto',  margin: 'auto', padding: '20px' }}>
                         {children}
-                    </Card>
-                </LocalizationProvider> 
+                    </Card> */}
+                    {children}
+                </LocalizationProvider>
             </Main>
         </Box>
     );
 }
+

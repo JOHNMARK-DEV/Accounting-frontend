@@ -11,14 +11,14 @@ import {
     GridRowModesModel,
     GridRowModes,
     DataGrid,
-    GridColDef,
+    GridColDef, 
     GridToolbarContainer,
     GridActionsCellItem,
     GridEventListener,
     GridRowId,
     GridRowModel,
     GridRowEditStopReasons,
-} from '@mui/x-data-grid';
+} from '@mui/x-data-grid'; 
 import {
     randomCreatedDate,
     randomTraderName,
@@ -47,10 +47,11 @@ interface ITable {
     _rows: GridRowsProp,
     onSave: (data: any) => void;
     onDelete: (id: GridRowId) => void;
-    onCancel:  (id: GridRowId) => void;
+    onCancel: (id: GridRowId) => void;
     parentRef: React.RefObject<ChildProps | null>;
+    hideAddBtn?: boolean;
 }
-const Table: React.FC<ITable> = forwardRef(({ onSave, onDelete,onCancel, _cols, _rows }, ref) => {
+const Table: React.FC<ITable> = forwardRef(({ onSave, onDelete, onCancel, _cols, _rows, hideAddBtn = false}, ref) => {
 
     React.useEffect(() => {
         // Iterate over the existing state and update the mode for each item
@@ -68,7 +69,7 @@ const Table: React.FC<ITable> = forwardRef(({ onSave, onDelete,onCancel, _cols, 
 
     const [rows, setRows] = React.useState(initialRows);
     const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
-    let columns: GridColDef[] = [ 
+    let columns: GridColDef[] = [
         {
             field: 'actions',
             type: 'actions',
@@ -125,7 +126,7 @@ const Table: React.FC<ITable> = forwardRef(({ onSave, onDelete,onCancel, _cols, 
         hasEditMode = Object.values(rowModesModel).some((row) => row.mode === GridRowModes.Edit);
 
         // If there's an edit mode, you can handle it accordingly
-        if(hasEditMode) {
+        if (hasEditMode) {
             console.log("There's already an edit mode in the table. You can't add a new row.");
             return false;
         }
@@ -138,15 +139,14 @@ const Table: React.FC<ITable> = forwardRef(({ onSave, onDelete,onCancel, _cols, 
         const handleClick = () => {
 
             // validate if theres is already edit mode in table
-            if(handleOnValidateEdit()){
-                console.log(GridRowModes.Edit)
+            if (handleOnValidateEdit()) {
                 const id = randomId();
-                setRows((oldRows) => [ { id, isNew: true },...oldRows]);
+                setRows((oldRows) => [{ id, isNew: true }, ...oldRows]);
                 setRowModesModel((oldModel) => ({
                     ...oldModel,
                     [id]: { mode: GridRowModes.Edit, fieldToFocus: 'code' },
                 }));
-            } 
+            }
         };
 
         return (
@@ -164,10 +164,10 @@ const Table: React.FC<ITable> = forwardRef(({ onSave, onDelete,onCancel, _cols, 
     };
 
     const handleEditClick = (id: GridRowId) => () => {
-         // validate if theres is already edit mode in table 
-        if(handleOnValidateEdit()){ 
-            setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } }); 
-        } 
+        // validate if theres is already edit mode in table 
+        if (handleOnValidateEdit()) {
+            setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+        }
     };
 
 
@@ -189,24 +189,15 @@ const Table: React.FC<ITable> = forwardRef(({ onSave, onDelete,onCancel, _cols, 
         if (editedRow!.isNew) {
             setRows(rows.filter((row) => row.id !== id));
         }
-    };
-
-    // const processRowUpdate = (newRow: GridRowModel) => {
-    //     alert("save success")
-    //     const updatedRow = { ...newRow, isNew: false };
-    //     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-    //     return updatedRow;
-    // };
-
+    }; 
     const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
         setRowModesModel(newRowModesModel);
     };
 
     return (
-        <Box
+        <Box 
             sx={{
                 height: '70vh',
-                width: '78vw',
                 marginLeft: "auto",
                 marginRight: "auto",
                 '& .actions': {
@@ -215,6 +206,7 @@ const Table: React.FC<ITable> = forwardRef(({ onSave, onDelete,onCancel, _cols, 
                 '& .textPrimary': {
                     color: 'text.primary',
                 },
+                width:'100%'
             }}
         >
             <DataGrid
@@ -224,13 +216,14 @@ const Table: React.FC<ITable> = forwardRef(({ onSave, onDelete,onCancel, _cols, 
                 rowModesModel={rowModesModel}
                 onRowModesModelChange={handleRowModesModelChange}
                 onRowEditStop={handleRowEditStop}
-                processRowUpdate={onSave}
+                processRowUpdate={onSave} 
                 slots={{
-                    toolbar: EditToolbar,
+                    toolbar: !hideAddBtn ? EditToolbar : null
                 }}
                 slotProps={{
                     toolbar: { setRows, setRowModesModel },
                 }}
+                checkboxSelection
             />
         </Box>
     );

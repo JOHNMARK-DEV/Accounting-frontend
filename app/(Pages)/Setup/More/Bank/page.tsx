@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId, GridRowModel, GridRowModes, GridRowsProp, GridValidRowModel, GridValueGetterParams } from '@mui/x-data-grid';
 import CircularProgress from '@mui/material/CircularProgress';
 import Swal from 'sweetalert2';
-import Table from "@/components/EditableTable";
+import Table from "@/components/Tables/EditableTable";
 import { BankService } from "@/services/DatabaseServices";
 import { error } from "console";
 export default function Bank() {
@@ -34,11 +34,8 @@ export default function Bank() {
             setTimeout(() => {
                 setForceUpdateFlag((prev) => prev + 1);
             }, 500);
-        } else {
-
-            console.log(res.response.data.errors)
-            setErrors(res.response.data.errors)
-            // Swal.fire("Changes are not saved", res.response.data.errors.code[0] + 'and' + res.response.data.errors.name[0], "error"); 
+        } else { 
+            setErrors(res.response.data.errors) 
         }
     }
     const handleDeleteButton = (id: GridRowId) => {
@@ -68,8 +65,7 @@ export default function Bank() {
         }, 500);
     }
 
-    const [rows, setRows] = useState<GridRowsProp>([])
-    // let rows : GridRowsProp = []
+    const [rows, setRows] = useState<GridRowsProp>([]) 
     const fetchData = async () => {
         try {
             let res = await BankService.getAll()
@@ -80,8 +76,7 @@ export default function Bank() {
                     setRows(() => res.data)
                     setForceUpdateFlag((prev) => prev + 1);
                 }
-            }
-
+            } 
         } catch (error) {
             console.log(error)
         }
@@ -103,8 +98,7 @@ export default function Bank() {
                 variant="indeterminate"
             />
         )
-    }
-
+    } 
 
     return (
         <div key={forceUpdateFlag}>

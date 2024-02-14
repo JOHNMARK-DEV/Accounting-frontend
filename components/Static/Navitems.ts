@@ -16,7 +16,7 @@ import LineAxisIcon from '@mui/icons-material/LineAxis';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 
-export const UseTransactionNav = [ 
+export const UseAccountingManagementNav = [ 
     {
         name: "Invoicing",
         icon: ReceiptIcon

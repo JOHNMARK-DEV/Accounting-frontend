@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId, GridRowModel, GridRowModes, GridRowsProp, GridValidRowModel, GridValueGetterParams } from '@mui/x-data-grid';
 
 import Swal from 'sweetalert2';
-import Table from "@/components/EditableTable";
+import Table from "@/components/Tables/EditableTable";
 import { ChartclassService } from "@/services/DatabaseServices";
 import { error } from "console";
 export default function Bank() {
@@ -34,7 +34,7 @@ export default function Bank() {
             setTimeout(() => {
                 setForceUpdateFlag((prev) => prev + 1);
             }, 500);
-        } else { 
+        } else {
             setErrors(res.response.data.errors)
             // Swal.fire("Changes are not saved", res.response.data.errors.code[0] + 'and' + res.response.data.errors.name[0], "error"); 
         }
@@ -90,7 +90,14 @@ export default function Bank() {
     }, [])
 
     const columns: GridColDef[] = [
-        { field: 'type_id', headerName: 'Type', width: 180, editable: true },
+        {
+            field: 'type',
+            headerName: 'Type',
+            width: 180,
+            editable: true,
+            type: 'singleSelect',
+            valueOptions: ['ASSET', 'LIABILITY', 'CAPITAL', 'INCOME', 'EXPENSES'],
+        },
         { field: 'code', headerName: 'Code', width: 180, editable: true },
         { field: 'name', headerName: 'Name', width: 180, editable: true }
     ];
@@ -121,6 +128,6 @@ export default function Bank() {
                     </Grid>
                 </Grid>
             </Box>
-        </div> 
+        </div>
     )
 }

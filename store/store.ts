@@ -1,38 +1,65 @@
 // store.js
-import { BookService, CurrencyService } from '@/services/DatabaseServices'; 
+import { BookService, BusinesspartnerSetupService, ChartofaccountService, CurrencyService, ProjectService } from '@/services/DatabaseServices';
+import { number } from 'zod';
 import { create } from 'zustand';
 
 const useStore = create((set) => {
-  return { 
-      BooksList:[],
-      getBooks: async () =>{
-        try {
-          const data = await BookService.getAll();
-          set({BooksList:data})
-        } catch (error) { 
-          console.error('Error fetching books:', error);
-        }
-      },
-      CurrencyList:[],
-      getCurrency: async () =>{
-        try {
-          const data = await CurrencyService.getAll();
-          set({CurrencyList:data})
-        } catch (error) { 
-          console.error('Error fetching books:', error);
-        }
-      },
-      addTodo: (text :any) =>
-        set((state :any) => ({
-            todos: [
-                ...state.todos,
-                {
-                    id: Date.now(),
-                    text,
-                    completed: false,
-                },
-            ],
-        })),
+  return {
+    BooksList: [],
+    getBooks: async () => {
+      try {
+        const res = await BookService.getAll();
+        set({ BooksList: res.data  })
+      } catch (error) {
+        console.error('Error fetching books:', error);
+      }
+    },
+    CurrencyList: [],
+    getCurrency: async () => {
+      try {
+        const res = await CurrencyService.getAll();
+        set({ CurrencyList: res.data  })
+      } catch (error) {
+        console.error('Error fetching books:', error);
+      }
+    }, 
+    BusinessPartnerList: [],
+    getBusinessPartner: async () => {
+      try {
+        const res = await BusinesspartnerSetupService.getAll();
+        set({ BusinessPartnerList: res.data })  
+      } catch (error) {
+        console.error('Error fetching BusinessPartnerList:', error);
+      }
+    }, 
+    ProjectList: [],
+    getProject: async () => {
+      try {
+        const res = await ProjectService.getAll();
+        set({ ProjectList: res.data })
+      } catch (error) {
+        console.error('Error fetching getProject:', error);
+      }
+    },  
+    ChartofAccountList: [],
+    getChartofAccountList: async () => {
+      try {
+        const res = await ChartofaccountService.getAll();
+        set({ ChartofAccountList: res.data })
+      } catch (error) {
+        console.error('Error fetching getProject:', error);
+      }
+    },  
+
+    SelectedBook:{
+      id:number,
+      code:String,
+      name:String
+    },
+    setSelectedBook : (data: any) =>{
+      set({ SelectedBook: data })
+    }
+
   };
 });
 
